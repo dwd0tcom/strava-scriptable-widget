@@ -31,6 +31,10 @@ You need to copy this page by tapping on the little share-sheet icon in the bott
 
 Download and install **strava.js** to you and place the small widget on your homescreen. Long-tap the widget and select *Edit "Scriptable"* . For Script select the Strava Script you just created, for Parameters past the Parameters you just created with the Shortcut. (They should be in your clipboard).
 
-
-
 ## Next Steps
+
+- [ ]  Offline fallback, if API is offline
+
+- [ ]  Highlight Image as background
+
+- [ ]  Medium and Large Widget?
