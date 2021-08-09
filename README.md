@@ -1,6 +1,6 @@
 # Strava Scriptable Widget
 
-<img title="" src="preview.png" alt=" " width="337">
+<img title="" src="preview.png" width="400">
 
 A simple script to display your latest Strava activity inside a [Scriptable](https://scriptable.app) widget.
 To display your latest activity, you'll need a [Strava Developer](https://developers.strava.com) account. I've created a little Shortcuts workflow to help you with your needed credentials.
@@ -31,10 +31,23 @@ You need to copy this page by tapping on the little share-sheet icon in the bott
 
 Download and install **strava.js** to you and place the small widget on your homescreen. Long-tap the widget and select *Edit "Scriptable"* . For Script select the Strava Script you just created, for Parameters past the Parameters you just created with the Shortcut. (They should be in your clipboard).
 
+## Changelog
+
+#### Version 1.0.0
+
+- **Added support for Strava's highlight image**
+  You can set this to false, if you don't want to display a picture
+
+- **Better error handling**
+  To check whats happening, you can see the console and get a more detailed output of which data source is currently in use.
+
+- **Added offline fallback for image + json data**
+  In some cases, when the celluar data is weak, you won't be able to see a picture, if the picture comes from an online source. Now, as a fallback, it's saved in iCloud.
+
 ## Next Steps
 
-- [ ]  Offline fallback, if API is offline
+- [x] Offline fallback, if API is offline
 
-- [ ]  Highlight Image as background
+- [x] Highlight Image as background
 
-- [ ]  Medium and Large Widget?
+- [ ] Medium and Large Widget?
