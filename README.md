@@ -11,7 +11,7 @@ This is free but mandatory in order to get every data correctly. So head over to
 
 1. Create a new Strava App
 
-2. Fill out every detail
+2. Fill out every detail (As website, you can use your own or something like `https://sampleapp.strava.com`
 
 3. Set **call-back domain** to `developers.strava.com`
 
