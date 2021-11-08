@@ -19,7 +19,7 @@ When you're done, you should be able to see your **ClientID** and **Client Secre
 
 ### 2. Run the Shortcuts Workflow
 
-[Download this Shortcut](https://www.icloud.com/shortcuts/6f1cb1820cc143c4ac081a1276acb8b9) and paste your **Client ID** and **Client Secret**.
+[Download this Shortcut](https://www.icloud.com/shortcuts/57a5bb786c61414ea6fb4fb062421bcf) and paste your **Client ID** and **Client Secret**.
 *If you're a first time user of Shortcuts, you need to run a basic shortcut once, switch to your phone's settings > shortcuts and allow to run other scripts. Afterwards the script should run fine.*
 
 #### What's going to happen:
