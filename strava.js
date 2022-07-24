@@ -362,7 +362,7 @@ function createProgressBar(context, dayIndex, dayLabel, total_hrs_percent, sport
     const symBike = SFSymbol.named('bicycle').image
     context.drawImageAtPoint(symBike, new Point(x - 7.5, y - 25))
   } else if (sportType == 'Swim') {
-    const symSwim = SFSymbol.named('drop').image
+    const symSwim = SFSymbol.named('humidity').image
     context.drawImageAtPoint(symSwim, new Point(x - 2.5, y - 25))
   } else if (total_hrs_percent > 1) {
     //TODO: other sports...
@@ -387,7 +387,7 @@ function mainCreateMediumWidget(stravaScaledSummaryData) {
   let rowY = -5
   // 1. Row: Swimming
   context.setFont(Font.regularSystemFont(11))
-  const symSwim = SFSymbol.named('drop').image
+  const symSwim = SFSymbol.named('humidity').image
   rowY += 25
   context.drawImageAtPoint(symSwim, new Point(0, rowY))
   context.drawText(`Σ ${scaledSummaryData.total_seconds_swim > 0 ? parseInt(`${scaledSummaryData.total_seconds_swim/60}`) : '-'} min`, new Point(32.5, rowY-2.5))
@@ -445,7 +445,8 @@ if (widgetInput !== null) {
   // create that file manually inside the scriptable folder, to be able to run the script from inside the scriptable app
   // strava-secret.json content:
   // {"clientID": "<your-client-id>", "clientSecret": "<your-client-secret>", "refreshToken": "<your-refresh-token>"}
-  const {clientID, clientSecret, refreshToken} = getSavedStravaData('strava-secret.json')
+  const {clientID, clientSecret, refreshToken} = getSavedStravaData('strava-secret.json');
+  
   if (!clientID || !clientSecret || !refreshToken) {
     throw new Error('Invalid parameter. Expected text content: {"clientID": "<your-client-id>", "clientSecret": "<your-client-secret>", "refreshToken": "<your-refresh-token>"}')
   }
@@ -463,7 +464,6 @@ let {summary, latestActivity} = await loadActivityFromLastNDays(clientID, client
 console.log(latestActivity);
 console.log(summary);
 // MAIN
-// if(!config.runsInWidget){
 if(config.widgetFamily == 'small'){
   let widget = await createWidget(latestActivity)
   widget.url = "strava://feed"
