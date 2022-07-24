@@ -392,7 +392,7 @@ function createProgressBar(context, dayIndex, dayLabel, total_hrs_percent, sport
     const symBike = SFSymbol.named('bicycle').image
     context.drawImageAtPoint(symBike, new Point(x - 7.5, y - 25))
   } else if (sportType == 'Swim') {
-    const symSwim = SFSymbol.named('rays').image
+    const symSwim = SFSymbol.named('drop').image
     context.drawImageAtPoint(symSwim, new Point(x - 2.5, y - 25))
   } else if (total_hrs_percent > 1) {
     //TODO: other sports...
@@ -417,7 +417,7 @@ function mainCreateMediumWidget(stravaScaledSummaryData) {
   let rowY = -5
   // 1. Row: Swimming
   context.setFont(Font.regularSystemFont(11))
-  const symSwim = SFSymbol.named('rays').image
+  const symSwim = SFSymbol.named('drop').image
   rowY += 25
   context.drawImageAtPoint(symSwim, new Point(0, rowY))
   context.drawText(`Σ ${scaledSummaryData.total_seconds_swim > 0 ? parseInt(`${scaledSummaryData.total_seconds_swim/60}`) : '-'} min`, new Point(32.5, rowY-2.5))
