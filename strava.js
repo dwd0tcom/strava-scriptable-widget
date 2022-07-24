@@ -72,36 +72,6 @@ const getLastMonday = () => {
   return ({ MondayAsInt: parseInt(prevMonday.getTime() / 1000), prevMonday: prevMonday })
 }
 
-async function loadActivity(clientID, clientSecret, refreshToken, numberOfActivities) {
-  try {
-    const req = new Request(apiURL(clientID, clientSecret, refreshToken))
-    req.method = "POST"
-    let response = await req.loadJSON()
-    const accessToken = response.access_token
-
-    // Get data of latest activity, in this case just the ID
-    const dataComplete = await new Request(callActivities + accessToken + `&per_page=${numberOfActivities}`).loadJSON()
-    const activityId = dataComplete[0].id
-
-    // Get latest activity, complete dataset for images. Kinda annyoing...
-    const callSingleActivity = `https://www.strava.com/api/v3/activities/`
-    let data = await new Request(callSingleActivity + activityId + "?access_token=" + accessToken).loadJSON()
-    // Save file to local
-    saveStravaData(data)
-
-    console.log('using online data')
-
-    return data
-
-  } catch (e) {
-    // If API is offline, use local data
-    data = getSavedStravaData();
-    console.log('using saved data')
-    return data
-
-  }
-}
-
 async function createWidget(data) {
 
   let milesToKm = (miles) => {
