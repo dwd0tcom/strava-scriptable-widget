@@ -31,11 +31,15 @@
 // Set to false if you don't want to see a photo
 const photoWidget = true
 const MAX_Y_HEIGHT = 75; // for medium widget
+const DISPLAY_SINGLE_ACTIVITY_AS_MEDIUM_WIDGET = false // set it to true, if you want to display the latest activity as a medium widget
+
 //
 // #############################################
 // #############################################
 
 // function definitions for data processing and small widget
+const apiURL = (clientID, clientSecret, refreshToken) => `https://www.strava.com/oauth/token?client_id=${clientID}&client_secret=${clientSecret}&refresh_token=${refreshToken}&grant_type=refresh_token`
+
 const saveStravaData = (data) => {
   let fm = FileManager.iCloud();
   let path = fm.joinPath(fm.documentsDirectory(), 'strava-data.json');
@@ -48,11 +52,18 @@ const saveImage = (img) => {
   fm.writeImage(path, img);
 };
 
-const getSavedStravaData = (filename) => {
+const getSavedStravaData = async (filename) => {
   filename = filename ? filename : 'strava-data.json'
   let fm = FileManager.iCloud();
   let path = fm.joinPath(fm.documentsDirectory(), filename);
+  try {
+    let downloadedFile = await fm.downloadFileFromiCloud(path);
+  } catch (error) {
+    console.error(error)
+    throw new Error(`If you want to run the widget from the inside the app create a file "strava-secret.json" inside Scriptable's icloud folder first.\nExpected text content: {"clientID": "<your-client-id>", "clientSecret": "<your-client-secret>", "refreshToken": "<your-refresh-token>"}`)
+  }
   let data = fm.readString(path);
+  console.log(`getSavedStravaData: \n${data}`);
   return JSON.parse(data);
 };
 
@@ -220,11 +231,13 @@ async function loadImage(imgUrl) {
 }
 
 async function loadActivityFromLastNDays(clientID, clientSecret, refreshToken, numberOfActivities, after) {
+  console.log(`TEST...\nYour ID: ${clientID}\nYour Secret: ${clientSecret}\nYour refresh token: ${refreshToken}`);
 
   try {
     const req = new Request(apiURL(clientID, clientSecret, refreshToken))
     req.method = "POST"
     let response = await req.loadJSON()
+    console.log(response);
     const accessToken = response.access_token
     // Get data of latest activity, in this case just the ID
     const dataComplete = await new Request(callActivities + accessToken + `&per_page=${numberOfActivities}` + `&after=${after}`).loadJSON()
@@ -242,8 +255,8 @@ async function loadActivityFromLastNDays(clientID, clientSecret, refreshToken, n
 
   } catch (e) {
     // If API is offline, use local data
-    // TODO get saved summary data as well
-    const offlineData = getSavedStravaData();
+    const offlineData = await getSavedStravaData();
+    console.log(e)
     console.log('using saved/offline data')
     return(offlineData)
 
@@ -268,7 +281,8 @@ function getPacePer100m(moving_time_in_seconds, distance_in_meters) {
 }
 
 function createSummaryFromActivies(activities) {
-
+  console.log("createSummaryFromActivies:");
+  console.log(activities);
   // 1) CREATE SUMMARY FOR CURRENT WEEK
   let initialValue = 0
   let total_seconds_swim = activities.filter((act) => act.type == 'Swim').reduce((act, prevActs) => act + prevActs.moving_time, initialValue)
@@ -364,6 +378,9 @@ function createProgressBar(context, dayIndex, dayLabel, total_hrs_percent, sport
   } else if (sportType == 'Swim') {
     const symSwim = SFSymbol.named('humidity').image
     context.drawImageAtPoint(symSwim, new Point(x - 2.5, y - 25))
+  } else if (sportType == 'Multi') {
+    const symSwim = SFSymbol.named('circlebadge.2').image
+    context.drawImageAtPoint(symSwim, new Point(x - 2.5, y - 25))
   } else if (total_hrs_percent > 1) {
     //TODO: other sports...
   }
@@ -441,21 +458,23 @@ if (widgetInput !== null) {
   }
 
 } else if(!config.runsInWidget){
-  console.log("accessing secrets from file...");
   // create that file manually inside the scriptable folder, to be able to run the script from inside the scriptable app
   // strava-secret.json content:
   // {"clientID": "<your-client-id>", "clientSecret": "<your-client-secret>", "refreshToken": "<your-refresh-token>"}
-  const {clientID, clientSecret, refreshToken} = getSavedStravaData('strava-secret.json');
-  
+  const secrets = await getSavedStravaData('strava-secret.json');
+  clientID = secrets.clientID;
+  clientSecret = secrets.clientSecret;
+  refreshToken = secrets.refreshToken;
+  console.log(`accessing secrets from file...\nYour ID: ${clientID}\nYour Secret: ${clientSecret}\nYour refresh token: ${refreshToken}`);
   if (!clientID || !clientSecret || !refreshToken) {
-    throw new Error('Invalid parameter. Expected text content: {"clientID": "<your-client-id>", "clientSecret": "<your-client-secret>", "refreshToken": "<your-refresh-token>"}')
+    throw new Error('Invalid text file "strava-secret.json".\nExpected text content: {"clientID": "<your-client-id>", "clientSecret": "<your-client-secret>", "refreshToken": "<your-refresh-token>"}')
   }
 }
 else {
   throw new Error("No parameters set. Please insert your parameters like this: clientID|ClientSecret|RefreshToken. Alternatively you can create a json file named 'strava-secret.json' inside the app folder")
 }
 
-const apiURL = (clientID, clientSecret, refreshToken) => `https://www.strava.com/oauth/token?client_id=${clientID}&client_secret=${clientSecret}&refresh_token=${refreshToken}&grant_type=refresh_token`
+
 
 const numberOfActivities = 30 //always load 30 activities and the last one complete; config.widgetFamily != 'small' ? 30 : 1; // load only 1 activity for the small widget
 const showLastNDays = 7
@@ -464,7 +483,7 @@ let {summary, latestActivity} = await loadActivityFromLastNDays(clientID, client
 console.log(latestActivity);
 console.log(summary);
 // MAIN
-if(config.widgetFamily == 'small'){
+if(config.widgetFamily == 'small' || DISPLAY_SINGLE_ACTIVITY_AS_MEDIUM_WIDGET){
   let widget = await createWidget(latestActivity)
   widget.url = "strava://feed"
   Script.setWidget(widget)
@@ -473,7 +492,7 @@ if(config.widgetFamily == 'small'){
   console.log('this runs as small widget');
 }
 
-if(config.widgetFamily == 'medium' || !config.runsInWidget){
+if((config.widgetFamily == 'medium' && !DISPLAY_SINGLE_ACTIVITY_AS_MEDIUM_WIDGET) || (!config.runsInWidget && !DISPLAY_SINGLE_ACTIVITY_AS_MEDIUM_WIDGET)){
 // if(!config.runsInWidget){
   const scaledSummaryData = normSummaryDataTo100Percent(summary, MAX_Y_HEIGHT);
   mainCreateMediumWidget(scaledSummaryData);
