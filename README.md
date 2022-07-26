@@ -44,6 +44,10 @@ Download and install **strava.js** to you and place the small widget on your hom
 - **Added offline fallback for image + json data**
   In some cases, when the celluar data is weak, you won't be able to see a picture, if the picture comes from an online source. Now, as a fallback, it's saved in iCloud.
 
+#### Version 1.1.0
+- **Added new medium sized widget that shows you weekly statistics**
+  The medium sized widget will be automatically selected if you set up your size accordingly.
+
 ## Troubleshooting
 If there is any error, it might get caused because the API endpoint is not available, when the widget tries to pull data from Strava. In order to check the API status, please visit [Strava Server Status](https://status.strava.com/#day).
 
