@@ -231,13 +231,11 @@ async function loadImage(imgUrl) {
 }
 
 async function loadActivityFromLastNDays(clientID, clientSecret, refreshToken, numberOfActivities, after) {
-  console.log(`TEST...\nYour ID: ${clientID}\nYour Secret: ${clientSecret}\nYour refresh token: ${refreshToken}`);
 
   try {
     const req = new Request(apiURL(clientID, clientSecret, refreshToken))
     req.method = "POST"
     let response = await req.loadJSON()
-    console.log(response);
     const accessToken = response.access_token
     // Get data of latest activity, in this case just the ID
     const dataComplete = await new Request(callActivities + accessToken + `&per_page=${numberOfActivities}` + `&after=${after}`).loadJSON()
@@ -281,8 +279,6 @@ function getPacePer100m(moving_time_in_seconds, distance_in_meters) {
 }
 
 function createSummaryFromActivies(activities) {
-  console.log("createSummaryFromActivies:");
-  console.log(activities);
   // 1) CREATE SUMMARY FOR CURRENT WEEK
   let initialValue = 0
   let total_seconds_swim = activities.filter((act) => act.type == 'Swim').reduce((act, prevActs) => act + prevActs.moving_time, initialValue)
@@ -480,8 +476,6 @@ const numberOfActivities = 30 //always load 30 activities and the last one compl
 const showLastNDays = 7
 
 let {summary, latestActivity} = await loadActivityFromLastNDays(clientID, clientSecret, refreshToken, numberOfActivities, getLastMonday().MondayAsInt)
-console.log(latestActivity);
-console.log(summary);
 // MAIN
 if(config.widgetFamily == 'small' || DISPLAY_SINGLE_ACTIVITY_AS_MEDIUM_WIDGET){
   let widget = await createWidget(latestActivity)
